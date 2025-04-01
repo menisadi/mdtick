@@ -1,0 +1,13 @@
+[project]
+name = "mdtick"
+version = "0.1.0"
+description = "Track progress across Markdown checklists with rich CLI output."
+authors = [{ name = "menisadi", email = "menisadi@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "rich >= 13.0.0"
+]
+
+[project.scripts]
+mdtick = "mdtick:main"

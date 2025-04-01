@@ -109,7 +109,8 @@ def create_dashboard(config_file: Path, view: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate a Projects Dashboard from multiple Markdown checklists."
+        prog="mdtick",
+        description="📋 mdtick — track progress across multiple Markdown checklists",
     )
     parser.add_argument(
         "config_file",
@@ -122,8 +123,14 @@ def main() -> None:
         default="animated",
         help="Choose display mode: animated (default) or table view.",
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="mdtick 1.0.0",
+        help="Show the version and exit.",
+    )
     args = parser.parse_args()
-
+    ...
     config_path = Path(args.config_file)
     create_dashboard(config_path, args.view)
 
