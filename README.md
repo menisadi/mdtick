@@ -2,7 +2,7 @@
 
 **mdtick** is a lightweight CLI tool that visualizes progress across multiple Markdown checklists. It reads your `.md` files and shows a dashboard of completed vs total tasks.
 
-![mdtick logo](assets/mdtick.png) <!-- Update path if needed -->
+<img src="assets/mdtick.png" alt="mdtick logo" width="200"/>
 
 ---
 
