@@ -13,7 +13,26 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
+__version__ = "0.1.0"
+
 console = Console()
+
+
+ASCII_LOGO = r"""
+ __  __ _____  _______ _ _      
+|  \/  |  __ \|__   __(_) |     
+| \  / | |  | |  | |   _| | ___ 
+| |\/| | |  | |  | |  | | |/ _ \
+| |  | | |__| |  | |  | | |  __/
+|_|  |_|_____/   |_|  |_|_|\___|  v{version}
+
+Markdown checklist progress tracker
+"""
+
+
+def print_banner():
+    console.print()
+    console.print(f"[bold green]{ASCII_LOGO.format(version=__version__)}[/bold green]")
 
 
 def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
@@ -31,8 +50,8 @@ def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
 
 
 def create_animated_dashboard(markdown_paths: list[Path]) -> None:
-    console.print()
-    console.print("[bold cyan]📋 Projects Checklist Dashboard[/bold cyan]\n")
+    print_banner()
+    # console.print("[bold cyan]Projects Checklist Dashboard[/bold cyan]\n")
 
     with Progress(
         TextColumn("[bold blue]{task.fields[project]}"),
@@ -49,9 +68,7 @@ def create_animated_dashboard(markdown_paths: list[Path]) -> None:
                 continue
 
             done, total, title = parse_checklist(md_path)
-            task_id = progress.add_task(
-                "", total=total, completed=0, project=title
-            )
+            task_id = progress.add_task("", total=total, completed=0, project=title)
             tasks.append((task_id, done))
 
         for task_id, done in tasks:
@@ -61,8 +78,8 @@ def create_animated_dashboard(markdown_paths: list[Path]) -> None:
 
 
 def create_table_dashboard(markdown_paths: list[Path]) -> None:
-    console.print()
-    table = Table(title="📋 Projects Checklist Dashboard")
+    print_banner()
+    table = Table(title="Dashboard")
 
     table.add_column("Project", style="bold cyan")
     table.add_column("Done", justify="right")
@@ -78,18 +95,14 @@ def create_table_dashboard(markdown_paths: list[Path]) -> None:
         done, total, title = parse_checklist(md_path)
         percent = (done / total) * 100 if total else 0
         bar = "█" * int(percent // 5) + "-" * (20 - int(percent // 5))
-        table.add_row(
-            title, str(done), str(total), f"[{bar}]", f"{percent:.1f}%"
-        )
+        table.add_row(title, str(done), str(total), f"[{bar}]", f"{percent:.1f}%")
 
     console.print(table)
 
 
 def create_dashboard(config_file: Path, view: str) -> None:
     if not config_file.exists():
-        console.print(
-            f"[bold red]❌ Config file not found:[/bold red] {config_file}"
-        )
+        console.print(f"[bold red]❌ Config file not found:[/bold red] {config_file}")
         return
 
     with config_file.open("r", encoding="utf-8") as f:
@@ -110,7 +123,7 @@ def create_dashboard(config_file: Path, view: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="mdtick",
-        description="📋 mdtick — track progress across multiple Markdown checklists",
+        description="mdtick — track progress across multiple Markdown checklists",
     )
     parser.add_argument(
         "config_file",
@@ -126,7 +139,7 @@ def main() -> None:
     parser.add_argument(
         "--version",
         action="version",
-        version="mdtick 1.0.0",
+        version=f"mdtick {__version__}",
         help="Show the version and exit.",
     )
     args = parser.parse_args()
