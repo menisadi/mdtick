@@ -2,6 +2,11 @@
 import argparse
 import re
 from pathlib import Path
+from rich.console import Console
+from rich.table import Table
+from rich.progress import Progress, BarColumn, TextColumn, TaskProgressColumn
+
+console = Console()
 
 
 def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
@@ -15,48 +20,49 @@ def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
 
     # Try to extract the first level-1 heading as the title
     title_match = re.search(r"^# (.+)", content, re.MULTILINE)
-    title = title_match.group(1).strip() if title_match else None
+    title = title_match.group(1).strip() if title_match else file_path.stem
 
     return done, total, title
 
 
-def show_progress(
-    done: int, total: int, title: str | None = None, bar_length: int = 40
-) -> None:
-    """Displays a progress bar in the terminal, optionally with a custom title."""
-    percent = (done / total) * 100 if total else 0
-    filled_length = int(bar_length * done // total) if total else 0
-    bar = "█" * filled_length + "-" * (bar_length - filled_length)
-
-    heading = f"📊 {title}" if title else "📊 Checklist Progress"
-    print(f"{heading}")
-    print(f"[{bar}] {done}/{total} tasks completed ({percent:.1f}%)\n")
-
-
 def create_dashboard(config_file: Path) -> None:
-    """
-    Reads each line from `config_file` as a path to a .md checklist
-    and displays the progress for each project.
-    """
+    """Displays a dashboard table using rich for multiple markdown checklist files."""
     if not config_file.exists():
-        print(f"❌ Config file not found: {config_file}")
+        console.print(
+            f"[bold red]❌ Config file not found:[/bold red] {config_file}"
+        )
         return
 
     with config_file.open("r", encoding="utf-8") as f:
         markdown_paths = [Path(line.strip()) for line in f if line.strip()]
 
     if not markdown_paths:
-        print("❌ No markdown files found in the config file.")
+        console.print(
+            "[bold red]❌ No markdown files found in the config file.[/bold red]"
+        )
         return
 
-    print("\n===== Projects Dashboard =====\n")
+    table = Table(title="\n📋 Projects Checklist Dashboard")
+
+    table.add_column("Project", style="bold cyan")
+    table.add_column("Done", justify="right")
+    table.add_column("Total", justify="right")
+    table.add_column("Progress", justify="left")
+    table.add_column("Percent", justify="right")
+
     for md_path in markdown_paths:
         if not md_path.exists():
-            print(f"⚠️  File not found: {md_path}")
+            table.add_row(f"[red]⚠️ {md_path.name}[/red]", "-", "-", "-", "-")
             continue
 
         done, total, title = parse_checklist(md_path)
-        show_progress(done, total, title)
+        percent = (done / total) * 100 if total else 0
+        bar = "█" * int(percent // 5) + "-" * (20 - int(percent // 5))
+        table.add_row(
+            title, str(done), str(total), f"[{bar}]", f"{percent:.1f}%"
+        )
+
+    console.print(table)
 
 
 def main() -> None:
