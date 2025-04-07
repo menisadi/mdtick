@@ -1,2 +1,3 @@
 /Users/meni/Code/personal/gleam/learn/roadmap.md
 /Users/meni/Code/personal/r-learn/roadmap/r_learning_plan.md
+/Users/meni/code/personal/r-learn/r_w3_tutorial.md
