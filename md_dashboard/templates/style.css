@@ -1,42 +1,80 @@
+/* Default reset and box-sizing */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
+/* Body styling */
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  max-width: 95%;
+  margin: 2rem auto;
+  line-height: 1.5;
 }
 
+/* Heading */
 h1 {
-  margin-bottom: 10px;
-  color: #007acc;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
+/* Table container spacing (if you want a narrower container, you can wrap table in a <div>) */
 table {
-  border-collapse: collapse;
   width: 100%;
-  max-width: 800px;
-  margin: auto;
+  border-collapse: collapse;
   overflow-x: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  text-align: left;
-}
-
+/* Table header */
 th {
-  background-color: #f8f8f8;
+  background-color: #efefef;
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
 }
 
+/* Table cells */
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Last row border removal (optional) */
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Progress bar in monospace */
 .progress-bar {
   font-family: monospace;
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
-/* Simple responsiveness: force horizontal scroll if needed */
+/* Make table a bit more "compact" on smaller viewports */
+@media only screen and (max-width: 800px) {
+  td, th {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 
+   Responsive approach:
+   - On very small screens, convert table into stacked blocks.
+   - This technique is optional; some people prefer to allow horizontal scrolling instead.
+*/
 @media only screen and (max-width: 600px) {
   table, thead, tbody, th, td, tr {
     display: block;
@@ -49,13 +87,14 @@ th {
     border: none;
     position: relative;
     padding-left: 50%;
-    white-space: pre-line;
+    border-bottom: 1px solid #eee;
   }
   td:before {
     position: absolute;
-    left: 10px;
+    left: 1rem;
+    top: 0.6rem;
     white-space: nowrap;
-    font-weight: bold;
+    font-weight: 600;
   }
   td:nth-of-type(1):before { content: "Project"; }
   td:nth-of-type(2):before { content: "Done"; }
@@ -63,3 +102,4 @@ th {
   td:nth-of-type(4):before { content: "Progress"; }
   td:nth-of-type(5):before { content: "Percent"; }
 }
+
