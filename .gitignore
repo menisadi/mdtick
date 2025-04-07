@@ -1,3 +1,4 @@
 .DS_Store
 exports
 md_dashboard/__pycache__
+test.txt
