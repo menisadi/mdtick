@@ -13,10 +13,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-__version__ = "0.1.0"
-
-console = Console()
-
+__version__ = "0.2.0"
 
 ASCII_LOGO = r"""
  __  __ _____  _______ _ _      
@@ -30,12 +27,12 @@ Markdown checklist progress tracker
 """
 
 
-def print_banner():
+def print_banner(console: Console):
     console.print()
     console.print(f"[bold green]{ASCII_LOGO.format(version=__version__)}[/bold green]")
 
 
-def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
+def parse_checklist(file_path: Path) -> tuple[int, int, str]:
     with file_path.open("r", encoding="utf-8") as f:
         content = f.read()
 
@@ -49,10 +46,8 @@ def parse_checklist(file_path: Path) -> tuple[int, int, str | None]:
     return done, total, title
 
 
-def create_animated_dashboard(markdown_paths: list[Path]) -> None:
-    print_banner()
-    # console.print("[bold cyan]Projects Checklist Dashboard[/bold cyan]\n")
-
+def create_animated_dashboard(console: Console, markdown_paths: list[Path]) -> None:
+    print_banner(console)
     with Progress(
         TextColumn("[bold blue]{task.fields[project]}"),
         BarColumn(bar_width=30),
@@ -71,14 +66,15 @@ def create_animated_dashboard(markdown_paths: list[Path]) -> None:
             task_id = progress.add_task("", total=total, completed=0, project=title)
             tasks.append((task_id, done))
 
+        # Advance the bars
         for task_id, done in tasks:
             for _ in range(done):
                 progress.advance(task_id)
                 time.sleep(0.05)
 
 
-def create_table_dashboard(markdown_paths: list[Path]) -> None:
-    print_banner()
+def create_table_dashboard(console: Console, markdown_paths: list[Path]) -> None:
+    print_banner(console)
     table = Table(title="Dashboard")
 
     table.add_column("Project", style="bold cyan")
@@ -100,7 +96,7 @@ def create_table_dashboard(markdown_paths: list[Path]) -> None:
     console.print(table)
 
 
-def create_dashboard(config_file: Path, view: str) -> None:
+def create_dashboard(console: Console, config_file: Path, view: str) -> None:
     if not config_file.exists():
         console.print(f"[bold red]❌ Config file not found:[/bold red] {config_file}")
         return
@@ -115,9 +111,9 @@ def create_dashboard(config_file: Path, view: str) -> None:
         return
 
     if view == "table":
-        create_table_dashboard(markdown_paths)
+        create_table_dashboard(console, markdown_paths)
     else:
-        create_animated_dashboard(markdown_paths)
+        create_animated_dashboard(console, markdown_paths)
 
 
 def main() -> None:
@@ -137,15 +133,39 @@ def main() -> None:
         help="Choose display mode: animated (default) or table view.",
     )
     parser.add_argument(
+        "--export-html",
+        type=str,
+        default=None,
+        help="Path to an output HTML file if you want to export the dashboard.",
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"mdtick {__version__}",
         help="Show the version and exit.",
     )
     args = parser.parse_args()
-    ...
+
+    # If exporting HTML, override the animated view to table
+    if args.export_html and args.view == "animated":
+        print(
+            "Warning: The animated view causes a very large HTML with each step. "
+            "Switching to table view for HTML export."
+        )
+        args.view = "table"
+
+    # Create a console that records only if we're exporting
+    console = Console(record=bool(args.export_html))
+
     config_path = Path(args.config_file)
-    create_dashboard(config_path, args.view)
+    create_dashboard(console, config_path, args.view)
+
+    # If requested, export to HTML
+    if args.export_html:
+        html_content = console.export_html(inline_styles=True)
+        with open(args.export_html, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        console.print(f"\n[green]HTML exported to:[/green] {args.export_html}")
 
 
 if __name__ == "__main__":
