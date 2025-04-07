@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+  color: #007acc;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  overflow-x: auto;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f8f8f8;
+}
+
+.progress-bar {
+  font-family: monospace;
+}
+
+/* Simple responsiveness: force horizontal scroll if needed */
+@media only screen and (max-width: 600px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  th {
+    position: absolute;
+    left: -9999px;
+  }
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    white-space: pre-line;
+  }
+  td:before {
+    position: absolute;
+    left: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+  td:nth-of-type(1):before { content: "Project"; }
+  td:nth-of-type(2):before { content: "Done"; }
+  td:nth-of-type(3):before { content: "Total"; }
+  td:nth-of-type(4):before { content: "Progress"; }
+  td:nth-of-type(5):before { content: "Percent"; }
+}

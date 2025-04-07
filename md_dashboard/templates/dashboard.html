@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Markdown Checklist Dashboard</title>
+	<!-- We'll inline CSS here; the Python code will replace {{ CSS }} with the file contents. -->
+	<style>
+		{
+				{
+				CSS
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Markdown Checklist Dashboard</h1>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Project</th>
+				<th>Done</th>
+				<th>Total</th>
+				<th>Progress</th>
+				<th>Percent</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- We'll drop the data rows here. -->
+			{{ TABLE_ROWS }}
+		</tbody>
+	</table>
+</body>
+
+</html>
