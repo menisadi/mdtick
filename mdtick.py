@@ -47,7 +47,6 @@ def parse_checklist(file_path: Path) -> tuple[int, int, str]:
 
 
 def create_animated_dashboard(console: Console, markdown_paths: list[Path]) -> None:
-    print_banner(console)
     with Progress(
         TextColumn("[bold blue]{task.fields[project]}"),
         BarColumn(bar_width=30),
@@ -74,7 +73,6 @@ def create_animated_dashboard(console: Console, markdown_paths: list[Path]) -> N
 
 
 def create_table_dashboard(console: Console, markdown_paths: list[Path]) -> None:
-    print_banner(console)
     table = Table(title="Dashboard")
 
     table.add_column("Project", style="bold cyan")
@@ -91,12 +89,14 @@ def create_table_dashboard(console: Console, markdown_paths: list[Path]) -> None
         done, total, title = parse_checklist(md_path)
         percent = (done / total) * 100 if total else 0
         bar = "█" * int(percent // 5) + "-" * (20 - int(percent // 5))
-        table.add_row(title, str(done), str(total), f"[{bar}]", f"{percent:.1f}%")
+        table.add_row(title, str(done), str(total), f"{bar}", f"{percent:.1f}%")
 
     console.print(table)
 
 
-def create_dashboard(console: Console, config_file: Path, view: str) -> None:
+def create_dashboard(
+    console: Console, config_file: Path, view: str, banner: bool
+) -> None:
     if not config_file.exists():
         console.print(f"[bold red]❌ Config file not found:[/bold red] {config_file}")
         return
@@ -110,6 +110,8 @@ def create_dashboard(console: Console, config_file: Path, view: str) -> None:
         )
         return
 
+    if banner:
+        print_banner(console)
     if view == "table":
         create_table_dashboard(console, markdown_paths)
     else:
@@ -131,6 +133,12 @@ def main() -> None:
         choices=["animated", "table"],
         default="animated",
         help="Choose display mode: animated (default) or table view.",
+    )
+    parser.add_argument(
+        "--banner",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Do not show the MDTICK banner.",
     )
     parser.add_argument(
         "--export-html",
@@ -158,7 +166,7 @@ def main() -> None:
     console = Console(record=bool(args.export_html))
 
     config_path = Path(args.config_file)
-    create_dashboard(console, config_path, args.view)
+    create_dashboard(console, config_path, args.view, args.banner)
 
     # If requested, export to HTML
     if args.export_html:
